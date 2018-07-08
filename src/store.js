@@ -10,6 +10,7 @@ export class Store {
     // Auto install if it is not done yet and `window` has `Vue`.
     // To allow users to avoid auto-installation in some cases,
     // this code should be placed here. See #731
+    // 如果用户在实例化Store前没有主动Vue.use(Vuex)，这里会主动装载
     if (!Vue && typeof window !== 'undefined' && window.Vue) {
       install(window.Vue)
     }
@@ -28,17 +29,25 @@ export class Store {
     let {
       state = {}
     } = options
+    // state属性可以是一个函数，内部执行该函数获取返回值，若无返回值则默认为空对象
     if (typeof state === 'function') {
       state = state() || {}
     }
 
     // store internal state
+    // 是否正在提交的标志
     this._committing = false
+    // actions操作对象
     this._actions = Object.create(null)
+    // 
     this._actionSubscribers = []
+    // mutations操作对象
     this._mutations = Object.create(null)
+    // 封装过后的getters对象
     this._wrappedGetters = Object.create(null)
+    // 存储分析之后
     this._modules = new ModuleCollection(options)
+    // 模块命名空间
     this._modulesNamespaceMap = Object.create(null)
     this._subscribers = []
     this._watcherVM = new Vue()
