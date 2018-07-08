@@ -2,7 +2,7 @@ import applyMixin from './mixin'
 import devtoolPlugin from './plugins/devtool'
 import ModuleCollection from './module/module-collection'
 import { forEachValue, isObject, isPromise, assert } from './util'
-
+// 局部变量，用于判断是否已经装载过vuex 即是否使用过vue.use(vuex)
 let Vue // bind on install
 
 export class Store {
@@ -470,8 +470,9 @@ function unifyObjectStyle (type, payload, options) {
 
   return { type, payload, options }
 }
-
+// 装载vuex的插件方法 https://cn.vuejs.org/v2/guide/plugins.html#%E5%BC%80%E5%8F%91%E6%8F%92%E4%BB%B6
 export function install (_Vue) {
+  // 重复装载判断
   if (Vue && _Vue === Vue) {
     if (process.env.NODE_ENV !== 'production') {
       console.error(
@@ -481,5 +482,6 @@ export function install (_Vue) {
     return
   }
   Vue = _Vue
+  // 装载vuex真正执行的方法
   applyMixin(Vue)
 }
