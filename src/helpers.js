@@ -88,7 +88,21 @@ export const createNamespacedHelpers = (namespace) => ({
   mapMutations: mapMutations.bind(null, namespace),
   mapActions: mapActions.bind(null, namespace)
 })
-
+/**
+ * 
+ *  // 以数组的方式传入
+ *   mapState([
+ *     'count',
+ *     'add'
+ *   ])
+ *
+ *   // 以对象的方法传入
+ *   mapState({
+ *     count: state => state.count,
+ *     countAlias: 'count'
+ *   })
+ */
+// 格式化传入的参数，使后面的使用过程更加统一和便捷
 function normalizeMap (map) {
   return Array.isArray(map)
     ? map.map(key => ({ key, val: key }))
