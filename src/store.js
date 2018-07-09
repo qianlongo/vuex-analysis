@@ -16,8 +16,11 @@ export class Store {
     }
 
     if (process.env.NODE_ENV !== 'production') {
+      // 创建store实例之前必须先装载Vuex
       assert(Vue, `must call Vue.use(Vuex) before creating a store instance.`)
+      // 必须支持Promise
       assert(typeof Promise !== 'undefined', `vuex requires a Promise polyfill in this browser.`)
+      // 必须使用new操作符去创建Store
       assert(this instanceof Store, `Store must be called with the new operator.`)
     }
 
