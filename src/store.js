@@ -58,6 +58,7 @@ export class Store {
     // bind commit and dispatch to self
     const store = this
     const { dispatch, commit } = this
+    // 封装替换原型中的dispatch和commit函数，将其内部的this指向为store
     this.dispatch = function boundDispatch (type, payload) {
       return dispatch.call(store, type, payload)
     }
