@@ -38,9 +38,9 @@ export class Store {
     }
 
     // store internal state
-    // 是否正在提交的标志
+    // 是否正在提交的标志， 作用是使得状态的修改只能在mutation的回调函数中执行，在外部不行
     this._committing = false
-    // actions操作对象
+    // actions操作对象,存放用户定义的所有action
     this._actions = Object.create(null)
     // 
     this._actionSubscribers = []
