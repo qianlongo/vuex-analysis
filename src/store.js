@@ -87,10 +87,12 @@ export class Store {
   }
 
   get state () {
+    // 初始化vuex时，传入的state便是实例化vue时候的data
     return this._vm._data.$$state
   }
 
   set state (v) {
+    // 不允许直接修改state，非生产环境会报错
     if (process.env.NODE_ENV !== 'production') {
       assert(false, `Use store.replaceState() to explicit replace store state.`)
     }
