@@ -98,6 +98,17 @@ export class Store {
 
   commit (_type, _payload, _options) {
     // check object-style commit
+    /**
+     * store.commit('increment', {
+     * amount: 10
+     * })
+     * store.commit({
+     *   type: 'increment',
+     *   amount: 10
+     * })
+     * 
+     */
+    // 适配参数
     const {
       type,
       payload,
@@ -112,6 +123,7 @@ export class Store {
       }
       return
     }
+    // 只能用该方法修改state
     this._withCommit(() => {
       entry.forEach(function commitIterator (handler) {
         handler(payload)
