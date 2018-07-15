@@ -132,6 +132,20 @@ export class Store {
 
   dispatch (_type, _payload) {
     // check object-style dispatch
+    /**
+     * // 以载荷形式分发
+     * store.dispatch('incrementAsync', {
+     *   amount: 10
+     * })
+     * 
+     * // 以对象形式分发
+     * store.dispatch({
+     *   type: 'incrementAsync',
+     *   amount: 10
+     * })
+     * 
+     */
+    // 适配 dispatch函数参数
     const {
       type,
       payload
