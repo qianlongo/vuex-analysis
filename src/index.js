@@ -7,7 +7,9 @@ let Vue // bind on install
 
 class Store {
   constructor (options = {}) {
+    // 需要先装载Vue
     assert(Vue, `must call Vue.use(Vuex) before creating a store instance.`)
+    // vuex依赖Promise
     assert(typeof Promise !== 'undefined', `vuex requires a Promise polyfill in this browser.`)
 
     const {
@@ -29,6 +31,7 @@ class Store {
     // bind commit and dispatch to self
     const store = this
     const { dispatch, commit } = this
+    // 使dispatch内部的this指向当前的Store，下面的commit也是
     this.dispatch = function boundDispatch (type, payload) {
       return dispatch.call(store, type, payload)
     }
@@ -51,11 +54,11 @@ class Store {
     // apply plugins
     plugins.concat(devtoolPlugin).forEach(plugin => plugin(this))
   }
-
+  // store.state  就是_vm.state
   get state () {
     return this._vm.state
   }
-
+  // 不允许手动直接设置state
   set state (v) {
     assert(false, `Use store.replaceState() to explicit replace store state.`)
   }
@@ -216,6 +219,7 @@ function resetStoreVM (store, state) {
   // some funky global mixins
   const silent = Vue.config.silent
   Vue.config.silent = true
+  // 往store上添加了一个_vm属性，该属性是Vue的实例，并且用state作为其data
   store._vm = new Vue({
     data: { state },
     computed
@@ -341,6 +345,7 @@ function getNestedState (state, path) {
 }
 
 function install (_Vue) {
+  // 防止重复装载
   if (Vue) {
     console.error(
       '[vuex] already installed. Vue.use(Vuex) should be called only once.'
