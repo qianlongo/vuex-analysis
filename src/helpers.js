@@ -24,10 +24,15 @@ computed: mapState([
   'count'
 ])
 */
+
 export function mapState (states) {
   const res = {}
   normalizeMap(states).forEach(({ key, val }) => {
     res[key] = function mappedState () {
+      /**
+       * 如果是函数，则通过.call形式调用，并且函数的第一个参数是$store.state, 第二个参数是$store.getters
+       * 不是函数就直接读取this.$store.state的值
+       */
       return typeof val === 'function'
         ? val.call(this, this.$store.state, this.$store.getters)
         : this.$store.state[val]
@@ -68,7 +73,7 @@ export function mapActions (actions) {
   })
   return res
 }
-
+// mapState mapAction等都有两种传参方式 数组或者对象，该方法主要是格式化参数,使外部使用统一
 function normalizeMap (map) {
   return Array.isArray(map)
     ? map.map(key => ({ key, val: key }))
