@@ -313,7 +313,14 @@ function resetStoreVM (store, state, hot) {
     Vue.nextTick(() => oldVm.$destroy())
   }
 }
-
+/**
+ * 
+ * @param {*} store Store的实例
+ * @param {*} rootState 根state
+ * @param {*} path 当前嵌套模块的路径数组
+ * @param {*} module 当前安装的模块
+ * @param {*} hot 动态改变modules或者热更新时为true
+ */
 function installModule (store, rootState, path, module, hot) {
   const isRoot = !path.length
   const namespace = store._modules.getNamespace(path)
