@@ -103,6 +103,7 @@ class Store {
 
   dispatch (type, payload) {
     // check object-style dispatch
+    // 参数处理
     if (isObject(type) && type.type) {
       payload = type
       type = type.type
@@ -112,6 +113,7 @@ class Store {
       console.error(`[vuex] unknown action type: ${type}`)
       return
     }
+    // 当handler有多个时，用Promise.all进行包装一层,只有一个则直接调用
     return entry.length > 1
       ? Promise.all(entry.map(handler => handler(payload)))
       : entry[0](payload)
