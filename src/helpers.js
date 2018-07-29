@@ -74,6 +74,40 @@ export function mapActions (actions) {
   return res
 }
 // mapState mapAction等都有两种传参方式 数组或者对象，该方法主要是格式化参数,使外部使用统一
+/* 以数组的方式传入
+mapState([
+  'count',
+  'add'
+])
+=>
+[
+  {
+    key: 'count',
+    val: 'count'
+  },
+  {
+    key: 'add',
+    val: 'add'
+  }
+]
+
+// 以对象的方法传入
+mapState({
+  count: state => state.count,
+  countAlias: 'count'
+})
+=>
+[
+  {
+    key: 'count',
+    val: state => state.count
+  },
+  {
+    key: 'countAlias',
+    val: 'count'
+  }
+]
+*/
 function normalizeMap (map) {
   return Array.isArray(map)
     ? map.map(key => ({ key, val: key }))
