@@ -23,6 +23,7 @@ class Store {
     this._committing = false
     this._actions = Object.create(null)
     this._mutations = Object.create(null)
+    // 主要作用是为getters服务
     this._wrappedGetters = Object.create(null)
     this._runtimeModules = Object.create(null)
     this._subscribers = []
@@ -205,6 +206,7 @@ function resetStoreVM (store, state) {
   store.getters = {}
   const wrappedGetters = store._wrappedGetters
   const computed = {}
+  // 对wrappedGetters进行get处理
   Object.keys(wrappedGetters).forEach(key => {
     const fn = wrappedGetters[key]
     // use computed to leverage its lazy-caching mechanism
@@ -271,7 +273,7 @@ function installModule (store, rootState, path, module, hot) {
       registerAction(store, key, actions[key], path)
     })
   }
-
+  // 如果传递了getters，用wrapGetters进行初始化处理
   if (getters) {
     wrapGetters(store, getters, path)
   }
@@ -316,12 +318,22 @@ function registerAction (store, type, handler, path = []) {
 }
 
 function wrapGetters (store, moduleGetters, modulePath) {
-  Object.keys(moduleGetters).forEach(getterKey => {
+  /**
+   * getters: {
+   *   // ...
+   *   doneTodosCount: (state, getters) => {
+   *     return getters.doneTodos.length
+   *   }
+   * }
+   */
+  Object.keys(moduleGetters).forEach(getterKey => {    
     const rawGetter = moduleGetters[getterKey]
+    // 不能重复设置getter
     if (store._wrappedGetters[getterKey]) {
       console.error(`[vuex] duplicate getter key: ${getterKey}`)
       return
     }
+    // 往_wrappedGetters上添加函数,函数的store是computed时候传入的
     store._wrappedGetters[getterKey] = function wrappedGetter (store) {
       return rawGetter(
         getNestedState(store.state, modulePath), // local state
