@@ -308,8 +308,11 @@ function registerMutation (store, type, handler, path = []) {
 }
 
 function registerAction (store, type, handler, path = []) {
+  // 同commit, 如果store._actions有则读取，没有就设置为一个数组
   const entry = store._actions[type] || (store._actions[type] = [])
+  // 读取store上的dispatch和commit函数,这里有点疑问的是，为什么getters不直接读取
   const { dispatch, commit } = store
+  // 添加action
   entry.push(function wrappedActionHandler (payload, cb) {
     let res = handler({
       dispatch,
@@ -318,6 +321,7 @@ function registerAction (store, type, handler, path = []) {
       state: getNestedState(store.state, path),
       rootState: store.state
     }, payload, cb)
+    // 如果action的回调handler返回的不是一个Promise则进行一层包装
     if (!isPromise(res)) {
       res = Promise.resolve(res)
     }
@@ -327,6 +331,7 @@ function registerAction (store, type, handler, path = []) {
         throw err
       })
     } else {
+      // 返回Promise res
       return res
     }
   })
