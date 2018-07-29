@@ -261,7 +261,7 @@ function installModule (store, rootState, path, module, hot) {
       Vue.set(parentState, moduleName, state || {})
     })
   }
-
+  // 初始化mutations, 真正主要实现在registerMutation函数
   if (mutations) {
     Object.keys(mutations).forEach(key => {
       registerMutation(store, key, mutations[key], path)
@@ -286,6 +286,7 @@ function installModule (store, rootState, path, module, hot) {
 }
 
 function registerMutation (store, type, handler, path = []) {
+  // 为什么同一个type需要是一个数组呢？ 而不是一个函数？，因为有模块的情况下mutation是有可能名字一样的，故用数组存
   const entry = store._mutations[type] || (store._mutations[type] = [])
   entry.push(function wrappedMutationHandler (payload) {
     handler(getNestedState(store.state, path), payload)
