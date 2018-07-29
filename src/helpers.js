@@ -81,7 +81,7 @@ export function mapGetters (getters) {
   })
   return res
 }
-
+// 使用 mapActions 辅助函数将组件的 methods 映射为 store.dispatch 调用（需要先在根节点注入 store）
 export function mapActions (actions) {
   const res = {}
   normalizeMap(actions).forEach(({ key, val }) => {
