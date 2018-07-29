@@ -40,7 +40,7 @@ export function mapState (states) {
   })
   return res
 }
-
+// 使用 mapMutations 辅助函数将组件中的 methods 映射为 store.commit 调用（需要在根节点注入 store）
 export function mapMutations (mutations) {
   const res = {}
   normalizeMap(mutations).forEach(({ key, val }) => {
