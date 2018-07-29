@@ -20,6 +20,7 @@ class Store {
 
     // store internal state
     this._options = options
+    // 和strict相对
     this._committing = false
     this._actions = Object.create(null)
     this._mutations = Object.create(null)
@@ -41,6 +42,7 @@ class Store {
     }
 
     // strict mode
+    // 在严格模式下，无论何时发生了状态变更且不是由 mutation 函数引起的，将会抛出错误。这能保证所有的状态变更都能被调试工具跟踪到。
     this.strict = strict
 
     // init root module.
@@ -66,6 +68,16 @@ class Store {
 
   commit (type, payload, options) {
     // check object-style commit
+    /**
+     * store.commit('increment', {
+     *    amount: 10
+     *  })
+     *  // 对象提交方式
+     *  store.commit({
+     *    type: 'increment',
+     *    amount: 10
+     *  })
+     */
     if (isObject(type) && type.type) {
       options = payload
       payload = type
@@ -73,10 +85,12 @@ class Store {
     }
     const mutation = { type, payload }
     const entry = this._mutations[type]
+    // 没有找到对应的type，进行报错
     if (!entry) {
       console.error(`[vuex] unknown mutation type: ${type}`)
       return
     }
+
     this._withCommit(() => {
       entry.forEach(function commitIterator (handler) {
         handler(payload)
