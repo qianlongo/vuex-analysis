@@ -51,10 +51,28 @@ export function mapMutations (mutations) {
   return res
 }
 
+// mapGetters 辅助函数仅仅是将 store 中的 getter 映射到局部计算属性
+// 同样一开始需要getters参数进行格式化处理
 export function mapGetters (getters) {
   const res = {}
   normalizeMap(getters).forEach(({ key, val }) => {
     res[key] = function mappedGetter () {
+      // 注意这里为什么是val不是key in this.$store.getters呢，看下面的例子
+      // 因为key有可能是要被改写的，真正读取的$store.getters还是val
+      /*
+        computed: {
+        // 使用对象展开运算符将 getter 混入 computed 对象中
+          ...mapGetters([
+            'doneTodosCount',
+            'anotherGetter',
+            // ...
+          ])
+        }
+        mapGetters({
+          // 把 `this.doneCount` 映射为 `this.$store.getters.doneTodosCount`
+          doneCount: 'doneTodosCount'
+        })
+      */
       if (!(val in this.$store.getters)) {
         console.error(`[vuex] unknown getter: ${val}`)
       }
