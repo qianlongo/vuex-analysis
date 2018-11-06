@@ -127,12 +127,13 @@ export class Store {
       }
       return
     }
-    // 只能用该方法修改state
+    // 只能通过_withCommit方法修改状态
     this._withCommit(() => {
       entry.forEach(function commitIterator (handler) {
         handler(payload)
       })
     })
+    // 执行插件函数
     this._subscribers.forEach(sub => sub(mutation, this.state))
 
     if (
@@ -290,7 +291,8 @@ function resetStoreVM (store, state, hot) {
   // use a Vue instance to store the state tree
   // suppress warnings just in case the user has added
   // some funky global mixins
-  const silent = Vue.config.silent
+  // https://cn.vuejs.org/v2/api/ 取消 Vue 所有的日志与警告。
+  const silent = Vue.config.silent 
   Vue.config.silent = true
   store._vm = new Vue({
     data: {
