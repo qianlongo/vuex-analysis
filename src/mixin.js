@@ -7,7 +7,7 @@ export default function (Vue) {
   } else {
     // override init and inject vuex init procedure
     // for 1.x backwards compatibility.
-    // 针对1.x版本进行兼容处理
+    // 针对1.x版本进行兼容处理,方式是重写Vue的init方法
     const _init = Vue.prototype._init
     Vue.prototype._init = function (options = {}) {
       options.init = options.init
