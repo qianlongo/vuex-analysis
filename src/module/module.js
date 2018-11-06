@@ -37,23 +37,23 @@ export default class Module {
       this._rawModule.getters = rawModule.getters
     }
   }
-
+  // 遍历子模块
   forEachChild (fn) {
     forEachValue(this._children, fn)
   }
-
+  // 遍历getter
   forEachGetter (fn) {
     if (this._rawModule.getters) {
       forEachValue(this._rawModule.getters, fn)
     }
   }
-
+  // 遍历action
   forEachAction (fn) {
     if (this._rawModule.actions) {
       forEachValue(this._rawModule.actions, fn)
     }
   }
-
+  // 遍历mutation
   forEachMutation (fn) {
     if (this._rawModule.mutations) {
       forEachValue(this._rawModule.mutations, fn)
