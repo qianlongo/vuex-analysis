@@ -377,12 +377,13 @@ function installModule (store, rootState, path, module, hot) {
   }
   // 设置局部的module上下文
   const local = module.context = makeLocalContext(store, namespace, path)
-
+  // 注册mutation，以供修改state
   module.forEachMutation((mutation, key) => {
+    // 这里的key增加了命名空间
     const namespacedType = namespace + key
     registerMutation(store, namespacedType, mutation, local)
   })
-
+  // 注册对应模块的action
   module.forEachAction((action, key) => {
     const type = action.root ? key : namespace + key
     const handler = action.handler || action
@@ -478,10 +479,12 @@ function makeLocalGetters (store, namespace) {
 
   return gettersProxy
 }
-
+// 注册mutation
 function registerMutation (store, type, handler, local) {
   const entry = store._mutations[type] || (store._mutations[type] = [])
+  // 真正commit(type, payload)的时候执行的不是直接定义的mutation，而是这里的wrappedMutationHandler
   entry.push(function wrappedMutationHandler (payload) {
+    // 接受的是local.state
     handler.call(store, local.state, payload)
   })
 }
