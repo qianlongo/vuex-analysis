@@ -241,9 +241,13 @@ export class Store {
   }
 
   _withCommit (fn) {
+    // 先保存先前的状态
     const committing = this._committing
+    // 设置为true，不然直接修改会跑出错误
     this._committing = true
+    // 执行定义时的mutation函数
     fn()
+    // 修改state完毕，还原之前的状态
     this._committing = committing
   }
 }
