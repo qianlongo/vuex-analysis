@@ -48,11 +48,13 @@ export class Store {
     this._mutations = Object.create(null)
     // 封装过后的getters对象
     this._wrappedGetters = Object.create(null)
-    // 存储分析之后
+    // 存储分析之后的模块树
     this._modules = new ModuleCollection(options)
     // 模块命名空间
     this._modulesNamespaceMap = Object.create(null)
+    // 订阅函数
     this._subscribers = []
+    // 用于监测数据变化
     this._watcherVM = new Vue()
 
     // bind commit and dispatch to self
