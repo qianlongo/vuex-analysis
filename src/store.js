@@ -506,7 +506,15 @@ function getNestedState (state, path) {
     ? path.reduce((state, key) => state[key], state)
     : state
 }
-
+/* 配置参数处理， 主要是第一个参数既可以是字符串type  也可以是对象类型
+  store.commit('increment', {
+    amount: 10
+  })
+  store.commit({
+    type: 'increment',
+    amount: 10
+  })
+*/
 function unifyObjectStyle (type, payload, options) {
   if (isObject(type) && type.type) {
     options = payload
