@@ -50,7 +50,7 @@ export class Store {
     this._wrappedGetters = Object.create(null)
     // 存储分析之后的模块树
     this._modules = new ModuleCollection(options)
-    // 模块命名空间
+    // 模块命名空间map
     this._modulesNamespaceMap = Object.create(null)
     // 订阅函数
     this._subscribers = []
@@ -331,9 +331,33 @@ function resetStoreVM (store, state, hot) {
  * @param {*} hot 动态改变modules或者热更新时为true
  */
 function installModule (store, rootState, path, module, hot) {
+  // 判断是否是跟路径
   const isRoot = !path.length
-  const namespace = store._modules.getNamespace(path)
+  // 获取命名空间
+  // options
+  /*
+    {
+      modules: {
+        a: {
+          modules: {
+            b: {
+              // ...
+            }
+          }
+        }
+      }
+    }
+    // [] path
+    / 命名空间
 
+    // [a] path
+    /a/ 命名空间
+
+    // [a, b] path
+    /a/b/ 命名空间
+  */
+  const namespace = store._modules.getNamespace(path)
+  // 存储有命名空间的模块
   // register in namespace map
   if (module.namespaced) {
     store._modulesNamespaceMap[namespace] = module
@@ -341,9 +365,13 @@ function installModule (store, rootState, path, module, hot) {
 
   // set state
   if (!isRoot && !hot) {
+    // 获取当前模块的父模块state
     const parentState = getNestedState(rootState, path.slice(0, -1))
+    // 当前的模块名字
     const moduleName = path[path.length - 1]
     store._withCommit(() => {
+      // https://cn.vuejs.org/v2/api/#Vue-set
+      // 向响应式对象中添加一个属性，并确保这个新属性同样是响应式的，且触发视图更新。它必须用于向响应式对象上添加新属性，因为 Vue 无法探测普通的新增属性 (比如 this.myObject.newProperty = 'hi')
       Vue.set(parentState, moduleName, module.state)
     })
   }
