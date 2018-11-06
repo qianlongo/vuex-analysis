@@ -168,6 +168,7 @@ export class Store {
     } = unifyObjectStyle(_type, _payload)
 
     const action = { type, payload }
+    // 获取type类型的action集合,是一个数组
     const entry = this._actions[type]
     if (!entry) {
       if (process.env.NODE_ENV !== 'production') {
@@ -175,9 +176,9 @@ export class Store {
       }
       return
     }
-
+    // TODO:
     this._actionSubscribers.forEach(sub => sub(action, this.state))
-
+    // 当entry是多个项时，用Promise.all去包一层，否则直接执行handler
     return entry.length > 1
       ? Promise.all(entry.map(handler => handler(payload)))
       : entry[0](payload)
