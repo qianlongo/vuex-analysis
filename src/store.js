@@ -277,6 +277,7 @@ function resetStore (store, hot) {
 }
 
 function resetStoreVM (store, state, hot) {
+  // 保存旧的vm实例
   const oldVm = store._vm
 
   // bind store public getters
@@ -286,6 +287,7 @@ function resetStoreVM (store, state, hot) {
   forEachValue(wrappedGetters, (fn, key) => {
     // use computed to leverage its lazy-caching mechanism
     computed[key] = () => fn(store)
+    // 代理一层getter
     Object.defineProperty(store.getters, key, {
       get: () => store._vm[key],
       enumerable: true // for local getters
