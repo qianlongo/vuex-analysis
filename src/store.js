@@ -75,6 +75,9 @@ export class Store {
     // init root module.
     // this also recursively registers all sub-modules
     // and collects all module getters inside this._wrappedGetters
+    /**
+     * 给module添加上namespace、注册mutation、action、getters
+     */
     installModule(this, state, [], this._modules.root)
 
     // initialize the store vm, which is responsible for the reactivity
@@ -180,7 +183,7 @@ export class Store {
       }
       return
     }
-    // TODO:
+    // 看subscribeAction函数，可以单独对action进行监听
     this._actionSubscribers.forEach(sub => sub(action, this.state))
     // 当entry是多个项时，用Promise.all去包一层，否则直接执行handler
     return entry.length > 1
@@ -208,7 +211,7 @@ export class Store {
       this._vm._data.$$state = state
     })
   }
-
+  // 注册一个动态的module
   registerModule (path, rawModule, options = {}) {
     if (typeof path === 'string') path = [path]
 
@@ -259,6 +262,7 @@ function genericSubscribe (fn, subs) {
   if (subs.indexOf(fn) < 0) {
     subs.push(fn)
   }
+  // 返回用于取消刚才的监听函数的函数
   return () => {
     const i = subs.indexOf(fn)
     if (i > -1) {
