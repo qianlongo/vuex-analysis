@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="./event-emitter.js"></script>
+</head>
+<body>
+  <script>
+    let ee = new EventEmitter()
+    
+    // 添加订阅1
+    ee.on('eat', (args) => {
+      console.log(`我是订阅者1： ${args}`)
+    })
+    // 添加订阅2
+    ee.on('eat', (args) => {
+      console.log(`我是订阅者2： ${args}`)
+    })
+    // 添加订阅2
+    ee.on('drink', (args) => {
+      console.log(`我是订阅者2： ${args}`)
+    })
+    // 添加订阅3
+    ee.on('drink', (args) => {
+      console.log(`我是订阅者3： ${args}`)
+    })
+    
+    // 发布消息
+    ee.emit('eat', [ '黄焖鸡', '烤鱼' ])
+    ee.emit('drink', [ '可乐', '牛奶' ])
+  </script>
+</body>
+</html>

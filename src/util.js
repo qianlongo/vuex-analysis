@@ -46,18 +46,10 @@ export function deepCopy (obj, cache = []) {
   return copy
 }
 
-/**
- * forEach for object
- */
-// 为遍历对象而封装的函数
-export function forEachValue (obj, fn) {
-  Object.keys(obj).forEach(key => fn(obj[key], key))
-}
-// 判断obj是否是对象, 我们一般不是通过Object.prototype.toString.call(obj) === '[object Object]'来判断吗
 export function isObject (obj) {
   return obj !== null && typeof obj === 'object'
 }
-// 简单判断val是不是Promise
+// 简单判断是否是Promise
 export function isPromise (val) {
   return val && typeof val.then === 'function'
 }

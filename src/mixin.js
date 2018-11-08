@@ -1,9 +1,9 @@
 export default function (Vue) {
-  // 获取Vue版本
   const version = Number(Vue.version.split('.')[0])
-  // 版本大于2的时候，通过mixin的形式注入,钩子时期是beforeCreate
+
   if (version >= 2) {
-    Vue.mixin({ beforeCreate: vuexInit })
+    const usesInit = Vue.config._lifecycleHooks.indexOf('init') > -1
+    Vue.mixin(usesInit ? { init: vuexInit } : { beforeCreate: vuexInit })
   } else {
     // override init and inject vuex init procedure
     // for 1.x backwards compatibility.

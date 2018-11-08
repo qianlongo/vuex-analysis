@@ -1,130 +1,133 @@
-export const mapState = normalizeNamespace((namespace, states) => {
+
+/*
+// 在单独构建的版本中辅助函数为 Vuex.mapState
+import { mapState } from 'vuex'
+
+export default {
+  // ...
+  computed: mapState({
+    // 箭头函数可使代码更简练
+    count: state => state.count,
+
+    // 传字符串参数 'count' 等同于 `state => state.count`
+    countAlias: 'count',
+
+    // 为了能够使用 `this` 获取局部状态，必须使用常规函数
+    countPlusLocalState (state) {
+      return state.count + this.localCount
+    }
+  })
+}
+
+computed: mapState([
+  // 映射 this.count 为 store.state.count
+  'count'
+])
+*/
+
+export function mapState (states) {
   const res = {}
   normalizeMap(states).forEach(({ key, val }) => {
     res[key] = function mappedState () {
-      let state = this.$store.state
-      let getters = this.$store.getters
-      if (namespace) {
-        const module = getModuleByNamespace(this.$store, 'mapState', namespace)
-        if (!module) {
-          return
-        }
-        state = module.context.state
-        getters = module.context.getters
-      }
+      /**
+       * 如果是函数，则通过.call形式调用，并且函数的第一个参数是$store.state, 第二个参数是$store.getters
+       * 不是函数就直接读取this.$store.state的值
+       */
       return typeof val === 'function'
-        ? val.call(this, state, getters)
-        : state[val]
+        ? val.call(this, this.$store.state, this.$store.getters)
+        : this.$store.state[val]
     }
-    // mark vuex getter for devtools
-    res[key].vuex = true
   })
   return res
-})
-
-export const mapMutations = normalizeNamespace((namespace, mutations) => {
+}
+// 使用 mapMutations 辅助函数将组件中的 methods 映射为 store.commit 调用（需要在根节点注入 store）
+export function mapMutations (mutations) {
   const res = {}
   normalizeMap(mutations).forEach(({ key, val }) => {
     res[key] = function mappedMutation (...args) {
-      let commit = this.$store.commit
-      if (namespace) {
-        const module = getModuleByNamespace(this.$store, 'mapMutations', namespace)
-        if (!module) {
-          return
-        }
-        commit = module.context.commit
-      }
-      return typeof val === 'function'
-        ? val.apply(this, [commit].concat(args))
-        : commit.apply(this.$store, [val].concat(args))
+      return this.$store.commit.apply(this.$store, [val].concat(args))
     }
   })
   return res
-})
+}
 
-export const mapGetters = normalizeNamespace((namespace, getters) => {
+// mapGetters 辅助函数仅仅是将 store 中的 getter 映射到局部计算属性
+// 同样一开始需要getters参数进行格式化处理
+export function mapGetters (getters) {
   const res = {}
   normalizeMap(getters).forEach(({ key, val }) => {
-    val = namespace + val
     res[key] = function mappedGetter () {
-      if (namespace && !getModuleByNamespace(this.$store, 'mapGetters', namespace)) {
-        return
-      }
-      if (process.env.NODE_ENV !== 'production' && !(val in this.$store.getters)) {
+      // 注意这里为什么是val不是key in this.$store.getters呢，看下面的例子
+      // 因为key有可能是要被改写的，真正读取的$store.getters还是val
+      /*
+        computed: {
+        // 使用对象展开运算符将 getter 混入 computed 对象中
+          ...mapGetters([
+            'doneTodosCount',
+            'anotherGetter',
+            // ...
+          ])
+        }
+        mapGetters({
+          // 把 `this.doneCount` 映射为 `this.$store.getters.doneTodosCount`
+          doneCount: 'doneTodosCount'
+        })
+      */
+      if (!(val in this.$store.getters)) {
         console.error(`[vuex] unknown getter: ${val}`)
-        return
       }
       return this.$store.getters[val]
     }
-    // mark vuex getter for devtools
-    res[key].vuex = true
   })
   return res
-})
-
-export const mapActions = normalizeNamespace((namespace, actions) => {
+}
+// 使用 mapActions 辅助函数将组件的 methods 映射为 store.dispatch 调用（需要先在根节点注入 store）
+export function mapActions (actions) {
   const res = {}
   normalizeMap(actions).forEach(({ key, val }) => {
     res[key] = function mappedAction (...args) {
-      let dispatch = this.$store.dispatch
-      if (namespace) {
-        const module = getModuleByNamespace(this.$store, 'mapActions', namespace)
-        if (!module) {
-          return
-        }
-        dispatch = module.context.dispatch
-      }
-      return typeof val === 'function'
-        ? val.apply(this, [dispatch].concat(args))
-        : dispatch.apply(this.$store, [val].concat(args))
+      return this.$store.dispatch.apply(this.$store, [val].concat(args))
     }
   })
   return res
-})
+}
+// mapState mapAction等都有两种传参方式 数组或者对象，该方法主要是格式化参数,使外部使用统一
+/* 以数组的方式传入
+mapState([
+  'count',
+  'add'
+])
+=>
+[
+  {
+    key: 'count',
+    val: 'count'
+  },
+  {
+    key: 'add',
+    val: 'add'
+  }
+]
 
-export const createNamespacedHelpers = (namespace) => ({
-  mapState: mapState.bind(null, namespace),
-  mapGetters: mapGetters.bind(null, namespace),
-  mapMutations: mapMutations.bind(null, namespace),
-  mapActions: mapActions.bind(null, namespace)
+// 以对象的方法传入
+mapState({
+  count: state => state.count,
+  countAlias: 'count'
 })
-/**
- * 
- *  // 以数组的方式传入
- *   mapState([
- *     'count',
- *     'add'
- *   ])
- *
- *   // 以对象的方法传入
- *   mapState({
- *     count: state => state.count,
- *     countAlias: 'count'
- *   })
- */
-// 格式化传入的参数，使后面的使用过程更加统一和便捷
+=>
+[
+  {
+    key: 'count',
+    val: state => state.count
+  },
+  {
+    key: 'countAlias',
+    val: 'count'
+  }
+]
+*/
 function normalizeMap (map) {
   return Array.isArray(map)
     ? map.map(key => ({ key, val: key }))
     : Object.keys(map).map(key => ({ key, val: map[key] }))
-}
-
-function normalizeNamespace (fn) {
-  return (namespace, map) => {
-    if (typeof namespace !== 'string') {
-      map = namespace
-      namespace = ''
-    } else if (namespace.charAt(namespace.length - 1) !== '/') {
-      namespace += '/'
-    }
-    return fn(namespace, map)
-  }
-}
-
-function getModuleByNamespace (store, helper, namespace) {
-  const module = store._modulesNamespaceMap[namespace]
-  if (process.env.NODE_ENV !== 'production' && !module) {
-    console.error(`[vuex] module namespace not found in ${helper}(): ${namespace}`)
-  }
-  return module
 }
