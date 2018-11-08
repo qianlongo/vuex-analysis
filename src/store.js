@@ -25,6 +25,7 @@ export class Store {
     }
 
     const {
+      // 插件集合，接受store作为唯一参数，可以监听mutation（这个地方可以用于数据持久化、提交mutation）
       plugins = [],
       strict = false
     } = options
@@ -78,12 +79,13 @@ export class Store {
 
     // initialize the store vm, which is responsible for the reactivity
     // (also registers _wrappedGetters as computed properties)
+    // 通过vm重新设置store，实现state computed等的响应化
     resetStoreVM(this, state)
 
     // apply plugins
     // 执行plugins, 并传入当前的store实例
     plugins.forEach(plugin => plugin(this))
-
+    // devtool 插件
     if (Vue.config.devtools) {
       devtoolPlugin(this)
     }
