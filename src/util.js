@@ -61,7 +61,7 @@ export function isObject (obj) {
 export function isPromise (val) {
   return val && typeof val.then === 'function'
 }
-// 简单的断言函数
+// 简单的断言函数, 思想却极其强大
 export function assert (condition, msg) {
   if (!condition) throw new Error(`[vuex] ${msg}`)
 }
