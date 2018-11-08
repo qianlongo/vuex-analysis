@@ -81,6 +81,7 @@ export class Store {
     resetStoreVM(this, state)
 
     // apply plugins
+    // 执行plugins, 并传入当前的store实例
     plugins.forEach(plugin => plugin(this))
 
     if (Vue.config.devtools) {
@@ -184,11 +185,11 @@ export class Store {
       ? Promise.all(entry.map(handler => handler(payload)))
       : entry[0](payload)
   }
-
+  // 添加监听mutation插件, 其实就是给_subscribers数组中不重复添加一个个函数
   subscribe (fn) {
     return genericSubscribe(fn, this._subscribers)
   }
-
+  // 添加监听action的插件
   subscribeAction (fn) {
     return genericSubscribe(fn, this._actionSubscribers)
   }
