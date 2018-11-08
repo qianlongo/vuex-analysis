@@ -23,6 +23,8 @@ export default function (Vue) {
 
   function vuexInit () {
     /**
+     * Vue.use(Vuex)
+     * 
      * new Vue({
      *   el: '#root',
      *   router,
@@ -30,14 +32,15 @@ export default function (Vue) {
      *   render: h => h(App)
      * })
      */
-    // 将初始化Vue根组件时传入的store设置到this实例的$store上，子组件会从父组件上引用$store,层层嵌套进行设置
     const options = this.$options
     // store injection
     if (options.store) {
-      // 上面简例中的store也可以是一个函数
+      // 根组件直接是读取传入的store
+      // store也可以是函数
       this.$store = typeof options.store === 'function'
         ? options.store()
         : options.store
+        // 子组件从父组件上获取store
     } else if (options.parent && options.parent.$store) {
       this.$store = options.parent.$store
     }
