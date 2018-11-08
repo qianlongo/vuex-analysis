@@ -12,15 +12,19 @@
     let ee = new EventEmitter()
     
     // 添加订阅1
-    ee.addListener('eat', (args) => {
+    ee.on('eat', (args) => {
       console.log(`我是订阅者1： ${args}`)
     })
     // 添加订阅2
-    ee.addListener('eat', (args) => {
+    ee.on('eat', (args) => {
+      console.log(`我是订阅者2： ${args}`)
+    })
+    // 添加订阅2
+    ee.on('drink', (args) => {
       console.log(`我是订阅者2： ${args}`)
     })
     // 添加订阅3
-    ee.addListener('drink', (args) => {
+    ee.on('drink', (args) => {
       console.log(`我是订阅者3： ${args}`)
     })
     
